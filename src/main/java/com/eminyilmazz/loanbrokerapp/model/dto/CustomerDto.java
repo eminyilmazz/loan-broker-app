@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Builder
 public class CustomerDto implements Serializable {
     private Long tckn;
+    private String birthDate;
     private String firstName;
     private String lastName;
     private String phoneNumber;

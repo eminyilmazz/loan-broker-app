@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,8 @@ public class Customer implements Serializable {
     @Id
     @Column(name = "tckn", nullable = false)
     private Long tckn;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
     @Transient
     private Integer creditScore;
     @Column(name = "first_name")
