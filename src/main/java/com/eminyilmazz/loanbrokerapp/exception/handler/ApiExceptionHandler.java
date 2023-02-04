@@ -23,7 +23,7 @@ public class ApiExceptionHandler {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    private ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) throws JsonProcessingException {
+    private ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
         Map<String, String> error = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(err -> {
             String fieldName = ((FieldError) err).getField();
