@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.util.List;
+
 @Entity
 @Table(name = "customer")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer {
+public class Customer implements Serializable {
     @Id
     @Column(name = "tckn", nullable = false)
     private Long tckn;
