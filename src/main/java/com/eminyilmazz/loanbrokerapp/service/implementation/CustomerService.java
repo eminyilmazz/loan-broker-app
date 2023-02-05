@@ -25,8 +25,9 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public Customer getByTckn(Long tckn) {
-        Customer customer = customerRepository.findById(tckn).orElseThrow(() -> new CustomerNotFoundException(String.format("Customer was not found with tckn %d", tckn)));
-        return customer;
+        return customerRepository.findById(tckn)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer tckn: " + tckn + " not found!"));
+
     }
 
     @Override
