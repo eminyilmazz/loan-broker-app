@@ -13,7 +13,7 @@ class CreditScoreProducerTest {
     private CreditScoreProducer creditScoreProducer;
 
     @Test
-    public void testSendMessage() {
+    void testSendMessage() {
         Long tckn = 12345678910L;
         Integer returnedValue = creditScoreProducer.send(tckn);
         assertEquals(1000, returnedValue);
