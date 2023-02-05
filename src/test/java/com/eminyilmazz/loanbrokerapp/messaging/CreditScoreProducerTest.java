@@ -13,9 +13,21 @@ class CreditScoreProducerTest {
     private CreditScoreProducer creditScoreProducer;
 
     @Test
-    void testSendMessage() {
+    void testSendMessage_shouldReturn1000() {
         Long tckn = 12345678910L;
         Integer returnedValue = creditScoreProducer.send(tckn);
         assertEquals(1000, returnedValue);
+    }
+    @Test
+    void testSendMessage_shouldReturn750() {
+        Long tckn = 12345678750L;
+        Integer returnedValue = creditScoreProducer.send(tckn);
+        assertEquals(750, returnedValue);
+    }
+    @Test
+    void testSendMessage_shouldReturn0() {
+        Long tckn = 12345678000L;
+        Integer returnedValue = creditScoreProducer.send(tckn);
+        assertEquals(0, returnedValue);
     }
 }
