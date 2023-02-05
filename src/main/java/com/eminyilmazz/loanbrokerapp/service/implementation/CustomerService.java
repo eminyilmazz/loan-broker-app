@@ -44,4 +44,13 @@ public class CustomerService implements ICustomerService {
         }
         return customerRepository.save(toEntity(customerDto));
     }
+
+    @Override
+    public boolean deleteCustomer(Long tckn) {
+        if (!customerRepository.existsById(tckn)) {
+            throw new CustomerNotFoundException("Delete operation is not successful. The customer does not exist.");
+        }
+        customerRepository.deleteById(tckn);
+        return true;
+    }
 }

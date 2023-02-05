@@ -14,4 +14,7 @@ public interface ICustomerService {
     Customer addCustomer(CustomerDto customerDto) throws DuplicateTcknException;
 
     Customer updateCustomer(CustomerDto customerDto);
+
+    boolean deleteCustomer(Long tckn);
+
 }
