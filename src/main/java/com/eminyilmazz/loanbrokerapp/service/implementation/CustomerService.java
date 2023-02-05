@@ -37,4 +37,11 @@ public class CustomerService implements ICustomerService {
         return customerRepository.save(toEntity(customerDto));
     }
 
+    @Override
+    public Customer updateCustomer(CustomerDto customerDto) throws CustomerNotFoundException {
+        if (!customerRepository.existsById(customerDto.getTckn())) {
+            throw new CustomerNotFoundException("Customer tckn: " + customerDto.getTckn() + " not found!");
+        }
+        return customerRepository.save(toEntity(customerDto));
+    }
 }

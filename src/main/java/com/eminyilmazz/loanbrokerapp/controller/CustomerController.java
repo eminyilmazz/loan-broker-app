@@ -34,4 +34,9 @@ public class CustomerController {
         TcknValidator.validate(customerDto.getTckn());
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.addCustomer(customerDto));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Customer> updateCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateCustomer(customerDto));
+    }
 }

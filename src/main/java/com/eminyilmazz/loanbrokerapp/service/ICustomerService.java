@@ -12,4 +12,6 @@ public interface ICustomerService {
     Customer getByTckn(Long tckn);
 
     Customer addCustomer(CustomerDto customerDto) throws DuplicateTcknException;
+
+    Customer updateCustomer(CustomerDto customerDto);
 }
