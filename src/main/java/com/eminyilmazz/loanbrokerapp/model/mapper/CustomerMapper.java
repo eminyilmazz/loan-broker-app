@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class CustomerMapper {
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
     private CustomerMapper() {
     }
 

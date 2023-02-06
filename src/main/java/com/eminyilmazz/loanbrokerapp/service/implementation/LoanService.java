@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import static com.eminyilmazz.loanbrokerapp.model.mapper.CustomerMapper.DATE_FORMAT;
 import static com.eminyilmazz.loanbrokerapp.utility.LoanUtility.processApplication;
-import static org.hibernate.type.descriptor.java.DateJavaType.DATE_FORMAT;
 
 @Service
 public class LoanService implements ILoanService {
@@ -39,7 +39,8 @@ public class LoanService implements ILoanService {
     public List<Loan> getByCustomer(GetLoansRequestDto request) {
         Customer customer = customerService.getByTcknAndBirthDate(request.getTckn(),
                                                                   LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(request.getBirthDate())));
-        return loanRepository.findByCustomer(customer);
+        if (Boolean.parseBoolean(request.getApproved())) return loanRepository.findByCustomerAndApprovalStatus(customer, true);
+        else return loanRepository.findByCustomer(customer);
     }
 
     @Override

@@ -17,5 +17,4 @@ public class GetLoansRequestDto {
     @JsonProperty(value = "birth_date")
     private String birthDate;
     private String approved;
-    private String active;
 }
