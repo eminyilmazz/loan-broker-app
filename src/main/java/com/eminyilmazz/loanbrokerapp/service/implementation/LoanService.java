@@ -28,7 +28,6 @@ public class LoanService implements ILoanService {
     CreditScoreProducer creditScoreProducer;
     @Value("${com.eminyilmazz.duedate.days:30}")
     int dueDateDays;
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     @Override
     public List<Loan> getAll() {
