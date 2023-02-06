@@ -1,6 +1,7 @@
-package com.eminyilmazz.loanbrokerapp.model.dto;
+package com.eminyilmazz.loanbrokerapp.model.mapper;
 
 import com.eminyilmazz.loanbrokerapp.model.Customer;
+import com.eminyilmazz.loanbrokerapp.model.dto.CustomerDto;
 import org.springframework.format.datetime.DateFormatter;
 
 import java.time.LocalDate;

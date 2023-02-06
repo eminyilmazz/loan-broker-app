@@ -22,11 +22,15 @@ public class CustomerDto implements Serializable {
     private String birthDate;
     @JsonProperty(value = "first_name")
     private String firstName;
+    @JsonProperty(value = "last_name")
     private String lastName;
     @Pattern(regexp = "^[0-9]{10}", message = "Phone number needs to be 10 digits and can only contain only numbers.")
+    @JsonProperty(value = "phone_number")
     private String phoneNumber;
     @Email
+    @JsonProperty(value = "email_address")
     private String emailAddress;
     @Min(0)
+    @JsonProperty(value = "monthly_salary")
     private Double monthlySalary;
 }

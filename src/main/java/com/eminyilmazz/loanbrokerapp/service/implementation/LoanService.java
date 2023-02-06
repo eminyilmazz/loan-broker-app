@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.eminyilmazz.loanbrokerapp.utility.LoanUtility.processApplication;
@@ -50,7 +50,7 @@ public class LoanService implements ILoanService {
                     .approvalStatus(loanRsp.isApproved())
                     .customer(customer)
                     .dueStatus(true)
-                    .approvalDate(LocalDate.now())
+                    .approvalDate(LocalDateTime.now())
                     .build());
         }
         return loanRsp;

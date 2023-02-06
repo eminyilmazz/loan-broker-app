@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.eminyilmazz.loanbrokerapp.model.dto.CustomerMapper.toEntity;
+import static com.eminyilmazz.loanbrokerapp.model.mapper.CustomerMapper.toEntity;
 
 @Service
 public class CustomerService implements ICustomerService {

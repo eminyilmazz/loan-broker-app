@@ -1,6 +1,7 @@
 package com.eminyilmazz.loanbrokerapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -26,23 +27,30 @@ public class Customer implements Serializable {
     private Long tckn;
     @Column(name = "birth_date", nullable = false)
     @Past
+    @JsonProperty(value = "birth_date")
     private LocalDate birthDate;
     @Transient
     @JsonIgnore
     private Integer creditScore;
     @Column(name = "first_name")
+    @JsonProperty(value = "first_name")
     private String firstName;
     @Column(name = "last_name")
+    @JsonProperty(value = "last_name")
     private String lastName;
     @Column(name = "phone_number")
     @Pattern(regexp = "^[0-9]{10}", message = "Phone number needs to be 10 digits and can only contain only numbers.")
+    @JsonProperty(value = "phone_number")
     private String phoneNumber;
     @Column(name = "email_address")
     @Email
+    @JsonProperty(value = "email_address")
     private String emailAddress;
     @Column(name = "monthly_salary")
+    @JsonProperty(value = "monthly_salary")
     private double monthlySalary;
     @Transient
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonProperty(value = "loans")
     private List<Loan> loanList;
 }

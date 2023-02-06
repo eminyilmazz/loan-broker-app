@@ -1,12 +1,13 @@
 package com.eminyilmazz.loanbrokerapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loans")
@@ -21,6 +22,7 @@ public class Loan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "loan_amount")
+    @JsonProperty(value = "loan_amount")
     private Double loanAmount;
     @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
@@ -28,9 +30,12 @@ public class Loan implements Serializable {
     private Customer customer;
     @Column(name = "approval_date")
     @CreationTimestamp
-    private LocalDate approvalDate;
+    @JsonProperty(value = "approval_date")
+    private LocalDateTime approvalDate;
     @Column(name = "approval_status", nullable = false)
+    @JsonProperty(value = "approval_status")
     private boolean approvalStatus;
     @Column(name = "due_status", nullable = false)
+    @JsonProperty(value = "due_status")
     private boolean dueStatus;
 }
