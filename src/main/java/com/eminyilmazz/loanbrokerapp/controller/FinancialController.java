@@ -1,6 +1,7 @@
 package com.eminyilmazz.loanbrokerapp.controller;
 
 import com.eminyilmazz.loanbrokerapp.model.Loan;
+import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.eminyilmazz.loanbrokerapp.service.ILoanService;
@@ -23,6 +24,11 @@ public class FinancialController {
     @GetMapping("/get/all")
     public ResponseEntity<List<Loan>> getAllLoans() {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.getAll());
+    }
+    @GetMapping("/get")
+    public ResponseEntity<List<Loan>> getLoans(@Valid @RequestBody GetLoansRequestDto request) {
+        validate(request.getTckn());
+        return ResponseEntity.status(HttpStatus.OK).body(loanService.getByCustomer(request));
     }
 
     @PostMapping("/apply")

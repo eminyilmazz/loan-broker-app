@@ -9,6 +9,7 @@ import com.eminyilmazz.loanbrokerapp.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.eminyilmazz.loanbrokerapp.model.mapper.CustomerMapper.toEntity;
@@ -28,6 +29,13 @@ public class CustomerService implements ICustomerService {
         return customerRepository.findById(tckn)
                 .orElseThrow(() -> new CustomerNotFoundException("Customer tckn: " + tckn + " not found!"));
 
+    }
+
+    @Override
+    public Customer getByTcknAndBirthDate(Long tckn, LocalDate birthDate) {
+        return customerRepository.findByTcknAndBirthDate(tckn, birthDate)
+
+                .orElseThrow(() -> new CustomerNotFoundException("Customer tckn: " + tckn + " and birth date" + birthDate + " not found!"));
     }
 
     @Override
