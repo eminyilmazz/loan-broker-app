@@ -6,7 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "loans")
@@ -28,7 +28,7 @@ public class Loan implements Serializable {
     private Customer customer;
     @Column(name = "approval_date")
     @CreationTimestamp
-    private LocalDateTime approvalDate;
+    private LocalDate approvalDate;
     @Column(name = "approval_status", nullable = false)
     private boolean approvalStatus;
     @Column(name = "due_status", nullable = false)
