@@ -18,8 +18,8 @@ public class SmsService implements ISmsService {
 
     @Override
     @ServiceActivator(inputChannel = "smsServiceInputChannel")
-    public void sendSms(Message message) {
-        Loan loan = ((LoanEvent) message.getPayload()).getLoan();
+    public void sendSms(Message<LoanEvent> message) {
+        Loan loan = message.getPayload().getLoan();
         Customer customer = loan.getCustomer();
         String approved = loan.isApprovalStatus() ? "approved" : "not approved";
         logger.info("Dear {} {}, your loan application is {}. Amount: {}", customer.getFirstName(), customer.getLastName(), approved, formatCurrency(loan.getLoanAmount()));

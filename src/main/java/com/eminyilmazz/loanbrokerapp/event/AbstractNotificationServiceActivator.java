@@ -10,7 +10,7 @@ public abstract class AbstractNotificationServiceActivator {
         this.requestChannel = requestChannel;
     }
 
-    protected void sendMessage(Message message) {
+    protected void sendMessage(Message<?> message) {
         requestChannel.send(message);
     }
 }
