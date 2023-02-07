@@ -4,6 +4,11 @@ import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Currency;
+import java.util.Locale;
+
 public class LoanUtility {
     private static final Double CREDIT_LIMIT_MULTIPLIER = 4D;
 
@@ -43,5 +48,15 @@ public class LoanUtility {
         if (salary < 5000) return assurance * 1.1; //Credit score -> 500 < x < 1000
         else if (salary < 10000) return assurance * 1.2; //Credit score -> 500 < x < 1000
         else return assurance * 1.25; //Credit score -> 500 < x < 1000
+    }
+
+    public static String formatCurrency(double d){
+        String amount = String.valueOf(d);
+        Locale locale = new Locale("en", "US");
+        Currency currency = Currency.getInstance(locale);
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
+        numberFormat.setCurrency(currency);
+        BigDecimal bigDecimal = new BigDecimal(amount);
+        return numberFormat.format(bigDecimal);
     }
 }
