@@ -12,6 +12,9 @@ import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
 import com.eminyilmazz.loanbrokerapp.service.ICustomerService;
 import com.eminyilmazz.loanbrokerapp.service.ILoanService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +36,8 @@ public class LoanService implements ILoanService {
     CreditScoreProducer creditScoreProducer;
     @Autowired
     LoanApplicationPublisher loanApplicationPublisher;
-
+    private static final Logger logger = LoggerFactory.getLogger(LoanService.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     @Override
     public List<Loan> getAll() {
         return loanRepository.findAll();
@@ -49,6 +53,7 @@ public class LoanService implements ILoanService {
 
     @Override
     public LoanResponseDto applyLoan(LoanApplicationDto application) {
+        logger.info("Apply loan started");
         Customer customer;
         try {
             customer = customerService.getByTckn(application.getTckn());
@@ -57,6 +62,11 @@ public class LoanService implements ILoanService {
         }
         customer.setCreditScore(creditScoreProducer.send(application.getTckn()));
         LoanResponseDto loanRsp = processApplication(customer, application);
+        try {
+            logger.debug("Loan application is processed: {}", objectMapper.writeValueAsString(loanRsp));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         Loan loan = Loan.builder()
                 .loanAmount(loanRsp.getAmount())
                 .approvalStatus(loanRsp.isApproved())
@@ -65,6 +75,7 @@ public class LoanService implements ILoanService {
                 .approvalDate(LocalDateTime.now())
                 .build();
         loanRepository.save(loan);
+        logger.info("Apply loan completed.");
         loanApplicationPublisher.onLoanApplication(loan);
         return loanRsp;
     }
