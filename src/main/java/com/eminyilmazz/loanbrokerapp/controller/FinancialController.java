@@ -25,7 +25,7 @@ public class FinancialController {
     public ResponseEntity<List<Loan>> getAllLoans() {
         return ResponseEntity.status(HttpStatus.OK).body(loanService.getAll());
     }
-    @GetMapping("/get")
+    @GetMapping("/history")
     public ResponseEntity<List<Loan>> getLoans(@Valid @RequestBody GetLoansRequestDto request) {
         validate(request.getTckn());
         return ResponseEntity.status(HttpStatus.OK).body(loanService.getByCustomer(request));
