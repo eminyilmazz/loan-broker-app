@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService implements IEmailService {
     @Override
-    @ServiceActivator(inputChannel = "smsServiceInputChannel")
+    @ServiceActivator(inputChannel = "emailServiceInputChannel")
     public void sendEmail() {
 
     }
