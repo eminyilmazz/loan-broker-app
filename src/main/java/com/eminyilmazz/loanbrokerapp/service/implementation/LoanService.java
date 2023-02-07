@@ -1,5 +1,6 @@
 package com.eminyilmazz.loanbrokerapp.service.implementation;
 
+import com.eminyilmazz.loanbrokerapp.event.LoanApplicationPublisher;
 import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
 import com.eminyilmazz.loanbrokerapp.messaging.CreditScoreProducer;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
@@ -10,6 +11,7 @@ import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
 import com.eminyilmazz.loanbrokerapp.service.ICustomerService;
 import com.eminyilmazz.loanbrokerapp.service.ILoanService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,8 @@ public class LoanService implements ILoanService {
     ICustomerService customerService;
     @Autowired
     CreditScoreProducer creditScoreProducer;
+    @Autowired
+    LoanApplicationPublisher loanApplicationPublisher;
 
     @Override
     public List<Loan> getAll() {
@@ -53,15 +57,15 @@ public class LoanService implements ILoanService {
         }
         customer.setCreditScore(creditScoreProducer.send(application.getTckn()));
         LoanResponseDto loanRsp = processApplication(customer, application);
-        if (loanRsp.isApproved()) {
-            loanRepository.save(Loan.builder()
-                    .loanAmount(loanRsp.getAmount())
-                    .approvalStatus(loanRsp.isApproved())
-                    .customer(customer)
-                    .dueStatus(true)
-                    .approvalDate(LocalDateTime.now())
-                    .build());
-        }
+        Loan loan = Loan.builder()
+                .loanAmount(loanRsp.getAmount())
+                .approvalStatus(loanRsp.isApproved())
+                .customer(customer)
+                .dueStatus(true)
+                .approvalDate(LocalDateTime.now())
+                .build();
+        loanRepository.save(loan);
+        loanApplicationPublisher.onLoanApplication(loan);
         return loanRsp;
     }
 }
