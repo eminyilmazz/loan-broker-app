@@ -2,11 +2,13 @@ package com.eminyilmazz.loanbrokerapp.service.implementation;
 
 import com.eminyilmazz.loanbrokerapp.event.LoanApplicationPublisher;
 import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
+import com.eminyilmazz.loanbrokerapp.exception.LoanNotFoundException;
 import com.eminyilmazz.loanbrokerapp.messaging.CreditScoreProducer;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
 import com.eminyilmazz.loanbrokerapp.service.ICustomerService;
@@ -78,5 +80,17 @@ public class LoanService implements ILoanService {
         logger.info("Apply loan completed.");
         loanApplicationPublisher.onLoanApplication(loan);
         return loanRsp;
+    }
+
+    @Override
+    public String payLoan(LoanPaymentApplication application) {
+        LocalDate date = LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(application.getBirthDate()));
+        if(!loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(application.getId(), application.getTckn(), date))
+            throw new LoanNotFoundException("Loan with id: " + application.getId() + " tckn: " + application.getTckn() + " birth date: " + application.getBirthDate() + " not found!");
+        Loan loan = loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(application.getId(), application.getTckn(), date);
+        if (!loan.isDueStatus()) return "Already paid";
+        loan.setDueStatus(false);
+        loanRepository.save(loan);
+        return "Payment successful";
     }
 }
