@@ -5,6 +5,7 @@ import com.eminyilmazz.loanbrokerapp.exception.IllegalTcknException;
 import com.eminyilmazz.loanbrokerapp.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class ApiExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException e) {
         Map<String, String> error = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach(err -> {
@@ -34,42 +35,42 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     private ResponseEntity<Map<String, String>> handleNotFoundException(NotFoundException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
+        error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler({IllegalTcknException.class})
+    @ExceptionHandler(IllegalTcknException.class)
     private ResponseEntity<Map<String, String>> handleIllegalTcknException(IllegalTcknException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
+        error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler(IllegalArgumentException.class)
     private ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
+        error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler({DuplicateTcknException.class})
+    @ExceptionHandler(DuplicateTcknException.class)
     private ResponseEntity<Map<String, String>> handleDuplicateTcknException(DuplicateTcknException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
+        error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(Exception.class)
     private ResponseEntity<Map<String, String>> handleException(DuplicateTcknException e) {
         Map<String, String> error = new HashMap<>();
-        error.put("message", e.getMessage());
+        error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
