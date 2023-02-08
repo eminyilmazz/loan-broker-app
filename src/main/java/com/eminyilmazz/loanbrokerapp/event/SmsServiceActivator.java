@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,7 @@ public class SmsServiceActivator extends AbstractNotificationServiceActivator {
     }
 
     @EventListener
+    @Async("taskExecutor")
     public void handleLoanEvent(LoanEvent loanEvent) {
         sendMessage(MessageBuilder.withPayload(loanEvent).build());
     }
