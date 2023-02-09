@@ -1,9 +1,11 @@
 package com.eminyilmazz.loanbrokerapp.service.implementation;
 
 import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
+import com.eminyilmazz.loanbrokerapp.exception.LoanNotFoundException;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -159,6 +161,48 @@ class LoanServiceTest {
     }
 
     @Test
-    void payLoan() {
+    void payLoan_whenLoanExists_returnsSuccessful() {
+        LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
+        Loan loan = new Loan();
+        loan.setDueStatus(true);
+
+        when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
+                .thenReturn(true);
+        when(loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
+                .thenReturn(loan);
+
+        String result = loanService.payLoan(application);
+
+        assertEquals("Payment successful", result);
+        verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(1)).findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(1)).save(loan);
+    }
+
+    @Test
+    void payLoan_loanAlreadyPaid_returnsMessage() {
+        LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
+        Loan loan = new Loan();
+        loan.setDueStatus(false);
+        when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
+                .thenReturn(true);
+        when(loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
+                .thenReturn(loan);
+        String result = loanService.payLoan(application);
+        assertEquals("Already paid", result);
+        verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(1)).findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(0)).save(any());
+    }
+
+    @Test
+    void payLoan_loanNotFound_throwsException() {
+        LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
+        when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
+                .thenReturn(false);
+        assertThrows(LoanNotFoundException.class, () -> loanService.payLoan(application));
+        verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(0)).findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
+        verify(loanRepository, times(0)).save(any());
     }
 }
