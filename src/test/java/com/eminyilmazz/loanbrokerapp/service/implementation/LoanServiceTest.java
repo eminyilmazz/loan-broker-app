@@ -7,8 +7,6 @@ import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,12 +86,10 @@ class LoanServiceTest {
         GetLoansRequestDto getLoansRequestDto = new GetLoansRequestDto();
         getLoansRequestDto.setTckn(12345678910L);
         getLoansRequestDto.setBirthDate(DateTimeFormatter.ofPattern(DATE_FORMAT).format(birthDate));
-
         //when
         when(customerService.getByTcknAndBirthDate(getLoansRequestDto.getTckn(), birthDate)).thenReturn(customer);
         when(loanRepository.findByCustomer(customer)).thenReturn(expectedLoanList);
         List<Loan> actualLoanList = loanService.getByCustomer(getLoansRequestDto);
-
         //then
         assertEquals(expectedLoanList.size(), actualLoanList.size());
         for (Loan expectedLoan : expectedLoanList) {
@@ -120,12 +116,10 @@ class LoanServiceTest {
         getLoansRequestDto.setTckn(12345678910L);
         getLoansRequestDto.setApproved("true");
         getLoansRequestDto.setBirthDate(DateTimeFormatter.ofPattern(DATE_FORMAT).format(birthDate));
-
         //when
         when(customerService.getByTcknAndBirthDate(getLoansRequestDto.getTckn(), birthDate)).thenReturn(customer);
         when(loanRepository.findByCustomerAndApprovalStatus(customer, Boolean.parseBoolean(getLoansRequestDto.getApproved()))).thenReturn(expectedLoanList);
         List<Loan> actualLoanList = loanService.getByCustomer(getLoansRequestDto);
-
         //then
         assertEquals(expectedLoanList.size(), actualLoanList.size());
         for (Loan expectedLoan : expectedLoanList) {
@@ -162,17 +156,17 @@ class LoanServiceTest {
 
     @Test
     void payLoan_whenLoanExists_returnsSuccessful() {
+        //given
         LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
         Loan loan = new Loan();
         loan.setDueStatus(true);
-
+        //when
         when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
                 .thenReturn(true);
         when(loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
                 .thenReturn(loan);
-
+        //then
         String result = loanService.payLoan(application);
-
         assertEquals("Payment successful", result);
         verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
         verify(loanRepository, times(1)).findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
@@ -181,13 +175,16 @@ class LoanServiceTest {
 
     @Test
     void payLoan_loanAlreadyPaid_returnsMessage() {
+        //given
         LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
         Loan loan = new Loan();
         loan.setDueStatus(false);
+        //when
         when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
                 .thenReturn(true);
         when(loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
                 .thenReturn(loan);
+        //then
         String result = loanService.payLoan(application);
         assertEquals("Already paid", result);
         verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
@@ -197,9 +194,12 @@ class LoanServiceTest {
 
     @Test
     void payLoan_loanNotFound_throwsException() {
+        //given
         LoanPaymentApplication application = new LoanPaymentApplication(1L, 12345678910L, "1999-01-01");
+        //when
         when(loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1)))
                 .thenReturn(false);
+        //then
         assertThrows(LoanNotFoundException.class, () -> loanService.payLoan(application));
         verify(loanRepository, times(1)).existsByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
         verify(loanRepository, times(0)).findByIdAndCustomer_TcknAndCustomer_BirthDate(1L, 12345678910L, LocalDate.of(1999, 1, 1));
