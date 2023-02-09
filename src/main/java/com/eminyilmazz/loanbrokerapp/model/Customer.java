@@ -53,4 +53,14 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonProperty(value = "loans")
     private List<Loan> loanList;
+
+    public Customer(Long tckn, LocalDate birthDate, String firstName, String lastName, String phoneNumber, String emailAddress, double monthlySalary) {
+        this.tckn = tckn;
+        this.birthDate = birthDate;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.emailAddress = emailAddress;
+        this.monthlySalary = monthlySalary;
+    }
 }

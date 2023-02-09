@@ -38,4 +38,12 @@ public class Loan implements Serializable {
     @Column(name = "due_status", nullable = false)
     @JsonProperty(value = "due_status")
     private boolean dueStatus;
+
+    public Loan(Long id, Double loanAmount, Customer customer, boolean approvalStatus, boolean dueStatus) {
+        this.id = id;
+        this.loanAmount = loanAmount;
+        this.customer = customer;
+        this.approvalStatus = approvalStatus;
+        this.dueStatus = dueStatus;
+    }
 }

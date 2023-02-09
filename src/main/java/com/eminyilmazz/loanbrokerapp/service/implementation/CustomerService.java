@@ -34,7 +34,6 @@ public class CustomerService implements ICustomerService {
     @Override
     public Customer getByTcknAndBirthDate(Long tckn, LocalDate birthDate) {
         return customerRepository.findByTcknAndBirthDate(tckn, birthDate)
-
                 .orElseThrow(() -> new CustomerNotFoundException("Customer tckn: " + tckn + " and birth date" + birthDate + " not found!"));
     }
 
