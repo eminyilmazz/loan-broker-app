@@ -1,7 +1,9 @@
 package com.eminyilmazz.loanbrokerapp.service.implementation;
 
 import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
+import com.eminyilmazz.loanbrokerapp.exception.DuplicateTcknException;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
+import com.eminyilmazz.loanbrokerapp.model.dto.CustomerDto;
 import com.eminyilmazz.loanbrokerapp.repository.CustomerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static com.eminyilmazz.loanbrokerapp.model.mapper.CustomerMapper.toEntity;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -100,8 +103,44 @@ class CustomerServiceTest {
     }
 
     @Test
-    void addCustomer() {
+    void addCustomer_thenCustomerShouldBeSaved() {
+        //given
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setTckn(12345678910L);
+        customerDto.setBirthDate("1999-01-01");
+        customerDto.setFirstName("Foo");
+        customerDto.setLastName("Bar");
+        customerDto.setPhoneNumber("1234567890");
+        customerDto.setEmailAddress("foo@bar.com");
+        customerDto.setMonthlySalary(2000.0);
+        Customer customer = toEntity(customerDto);
+        //when
+        when(customerRepository.existsById(customerDto.getTckn())).thenReturn(false);
+        when(customerRepository.save(customer)).thenReturn(customer);
+        //then
+        Customer result = customerService.addCustomer(customerDto);
+        verify(customerRepository, times(1)).existsById(customerDto.getTckn());
+        verify(customerRepository, times(1)).save(customer);
+        assertEquals(customer, result);
     }
+
+    @Test
+    void addCustomer_withDuplicateTckn_thenDuplicateTcknExceptionShouldBeThrown() {
+        //given
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setTckn(12345678910L);
+        //when
+        when(customerRepository.existsById(customerDto.getTckn())).thenReturn(true);
+        //then
+        Exception exception = assertThrows(DuplicateTcknException.class,
+                () -> customerService.addCustomer(customerDto));
+        verify(customerRepository, times(1)).existsById(customerDto.getTckn());
+        verify(customerRepository, times(0)).save(any());
+        assertNotNull(exception);
+        assertEquals(DuplicateTcknException.class, exception.getClass());
+        assertEquals("Provided TCKN already exists.\nCannot accept duplicate TCKN.\n", exception.getMessage());
+    }
+
 
     @Test
     void updateCustomer() {
