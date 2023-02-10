@@ -141,9 +141,34 @@ class CustomerServiceTest {
         assertEquals("Provided TCKN already exists.\nCannot accept duplicate TCKN.\n", exception.getMessage());
     }
 
+    @Test
+    void updateCustomer_WhenCustomerExists_ReturnSavedCustomer() throws CustomerNotFoundException {
+        //given
+        CustomerDto customerDto = new CustomerDto(12345678910L, "1999-01-01", "Foo", "Bar", "1234567890", "foo@bar.com", 5000.0);
+        Customer expectedCustomer = new Customer(12345678910L, LocalDate.of(1999, 1, 1), "Foo", "Bar", "1234567890", "foo@bar.com", 5000.0);
+        //when
+        when(customerRepository.existsById(customerDto.getTckn())).thenReturn(true);
+        when(customerRepository.save(any(Customer.class))).thenReturn(expectedCustomer);
+        //then
+        Customer updatedCustomer = customerService.updateCustomer(customerDto);
+        assertNotNull(updatedCustomer);
+        assertEquals(expectedCustomer, updatedCustomer);
+        verify(customerRepository, times(1)).existsById(customerDto.getTckn());
+        verify(customerRepository, times(1)).save(any(Customer.class));
+    }
 
     @Test
-    void updateCustomer() {
+    void updateCustomer_WhenCustomerDoesNotExist_ThrowCustomerNotFoundException() {
+        //given
+        CustomerDto customerDto = new CustomerDto(12345678910L, "1999-01-01", "Foo", "Bar", "1234567890", "foo@bar.com", 5000.0);
+        //when
+        when(customerRepository.existsById(customerDto.getTckn())).thenReturn(false);
+        //then
+        Exception exception = assertThrows(CustomerNotFoundException.class, () -> customerService.updateCustomer(customerDto));
+        assertEquals(CustomerNotFoundException.class, exception.getClass());
+        assertEquals("Customer tckn: " + customerDto.getTckn() + " not found!", exception.getMessage());
+        verify(customerRepository, times(1)).existsById(customerDto.getTckn());
+        verify(customerRepository, times(0)).save(any(Customer.class));
     }
 
     @Test
