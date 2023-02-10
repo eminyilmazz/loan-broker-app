@@ -172,6 +172,30 @@ class CustomerServiceTest {
     }
 
     @Test
-    void deleteCustomer() {
+    void deleteCustomer_WhenExists_ShouldReturnTrue() {
+        //given
+        Long tckn = 12345678910L;
+        //when
+        doNothing().when(customerRepository).deleteById(tckn);
+        when(customerRepository.existsById(tckn)).thenReturn(true);
+        //then
+        boolean result = customerService.deleteCustomer(tckn);
+        verify(customerRepository, times(1)).existsById(tckn);
+        verify(customerRepository, times(1)).deleteById(tckn);
+        assertTrue(result);
+    }
+
+    @Test
+    void deleteCustomer_WhenNotExists_ShouldThrowCustomerNotFoundException() {
+        //given
+        Long tckn = 12345678910L;
+        //when
+        when(customerRepository.existsById(tckn)).thenReturn(false);
+        //then
+        Exception exception = assertThrows(CustomerNotFoundException.class, () -> customerService.deleteCustomer(tckn));
+        assertEquals(CustomerNotFoundException.class, exception.getClass());
+        assertEquals("Delete operation is not successful. The customer does not exist.", exception.getMessage());
+        verify(customerRepository, times(1)).existsById(tckn);
+        verify(customerRepository, times(0)).deleteById(tckn);
     }
 }
