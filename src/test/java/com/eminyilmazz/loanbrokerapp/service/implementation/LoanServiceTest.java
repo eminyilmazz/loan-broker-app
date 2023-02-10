@@ -34,12 +34,22 @@ class LoanServiceTest {
     @InjectMocks
     private LoanService loanService;
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
-    void getAll() {
+    void getAll_ShouldReturnAllLoans() {
+        //given
+        LocalDate birthDate = LocalDate.of(2000, 1, 1);
+        Customer customer = new Customer(12345678910L, birthDate, "Dummy", "Test", "1234567890", "dummy.test@loanbroker.com", 9000D);
+        List<Loan> expectedLoans = Arrays.asList(
+                new Loan(1L, 10000.0, customer, true, false),
+                new Loan(2L, 20000.0, customer, true, true),
+                new Loan(3L, 30000.0, customer, false, false)
+        );
+        //when
+        when(loanRepository.findAll()).thenReturn(expectedLoans);
+        //then
+        List<Loan> result = loanService.getAll();
+        assertEquals(expectedLoans, result);
+        verify(loanRepository, times(1)).findAll();
     }
 
     @Test
