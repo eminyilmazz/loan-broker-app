@@ -11,6 +11,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +27,17 @@ class CustomerServiceTest {
     private CustomerService customerService;
 
     @Test
-    void getAll() {
+    void testGetAllCustomers() {
+        // Given
+        List<Customer> expectedCustomers = Arrays.asList(new Customer(), new Customer(), new Customer());
+
+        // When
+        when(customerRepository.findAll()).thenReturn(expectedCustomers);
+        List<Customer> result = customerService.getAll();
+
+        // Then
+        verify(customerRepository, times(1)).findAll();
+        assertEquals(expectedCustomers, result);
     }
 
     @Test
