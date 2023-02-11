@@ -5,7 +5,6 @@ import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -113,6 +112,10 @@ class LoanUtilityTest {
     }
 
     @Test
-    void formatCurrency() {
+    void formatCurrency_WithValidInput_ReturnsFormattedCurrency() {
+        double input = 12345.67;
+        String expectedResult = "$12,345.67";
+        String actualResult = LoanUtility.formatCurrency(input);
+        assertEquals(expectedResult, actualResult);
     }
 }
