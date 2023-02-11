@@ -25,7 +25,7 @@ public class Loan implements Serializable {
     @JsonProperty(value = "loan_amount")
     private Double loanAmount;
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "customer_tckn", referencedColumnName = "tckn")
     private Customer customer;
     @Column(name = "approval_date")

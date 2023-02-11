@@ -50,7 +50,7 @@ public class Customer implements Serializable {
     @JsonProperty(value = "monthly_salary")
     private double monthlySalary;
     @Transient
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
     @JsonProperty(value = "loans")
     private List<Loan> loanList;
 
