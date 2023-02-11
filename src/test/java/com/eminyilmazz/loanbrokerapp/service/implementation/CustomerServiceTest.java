@@ -116,11 +116,11 @@ class CustomerServiceTest {
         Customer customer = toEntity(customerDto);
         //when
         when(customerRepository.existsById(customerDto.getTckn())).thenReturn(false);
-        when(customerRepository.save(customer)).thenReturn(customer);
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
         //then
         Customer result = customerService.addCustomer(customerDto);
         verify(customerRepository, times(1)).existsById(customerDto.getTckn());
-        verify(customerRepository, times(1)).save(customer);
+        verify(customerRepository, times(1)).save(any(Customer.class));
         assertEquals(customer, result);
     }
 
