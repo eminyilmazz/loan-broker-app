@@ -58,7 +58,7 @@ public class LoanService implements ILoanService {
         logger.info("Apply loan started");
         Customer customer;
         try {
-            customer = customerService.getByTckn(application.getTckn());
+            customer = customerService.getByTcknAndBirthDate(application.getTckn(), LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(application.getBirthDate())));
         } catch (Exception e) {
             throw new CustomerNotFoundException(e.getMessage());
         }
