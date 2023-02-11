@@ -43,11 +43,11 @@ public class LoanUtility {
     private static double getAssuranceBonus(double salary, double assurance, int creditScore) {
         if (assurance <= 0.0) return 0.0; //No assurance
 
-        if (creditScore == 1000) return assurance * 1.5; //Credit score -> 1000
+        if (creditScore == 1000) return assurance * 0.5; //Credit score -> 1000
 
-        if (salary < 5000) return assurance * 1.1; //Credit score -> 500 < x < 1000
-        else if (salary < 10000) return assurance * 1.2; //Credit score -> 500 < x < 1000
-        else return assurance * 1.25; //Credit score -> 500 < x < 1000
+        if (salary < 5000) return assurance * 0.1; //Credit score -> 500 < x < 1000
+        else if (salary < 10000) return assurance * 0.2; //Credit score -> 500 < x < 1000
+        else return assurance * 0.25; //Credit score -> 500 < x < 1000
     }
 
     public static String formatCurrency(double d){
