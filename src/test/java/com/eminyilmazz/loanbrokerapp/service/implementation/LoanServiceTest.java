@@ -1,13 +1,17 @@
 package com.eminyilmazz.loanbrokerapp.service.implementation;
 
+import com.eminyilmazz.loanbrokerapp.event.LoanApplicationPublisher;
 import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
 import com.eminyilmazz.loanbrokerapp.exception.LoanNotFoundException;
+import com.eminyilmazz.loanbrokerapp.messaging.CreditScoreProducer;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.eminyilmazz.loanbrokerapp.utility.LoanUtility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +35,10 @@ class LoanServiceTest {
     private LoanRepository loanRepository;
     @Mock
     private CustomerService customerService;
+    @Mock
+    private CreditScoreProducer creditScoreProducer;
+    @Mock
+    private LoanApplicationPublisher loanApplicationPublisher;
     @InjectMocks
     private LoanService loanService;
 
@@ -161,7 +169,44 @@ class LoanServiceTest {
     }
 
     @Test
-    void applyLoan() {
+    void applyLoan_whenCustomerExists_thenReturnSuccessful() {
+        //given
+        LocalDate birthDate = LocalDate.of(1999, 1, 1);
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(12345678910L);
+        loanApplicationDto.setBirthDate(DateTimeFormatter.ofPattern(DATE_FORMAT).format(birthDate));
+        loanApplicationDto.setAssurance(0.0);
+        Customer customer = new Customer(12345678910L, LocalDate.of(1999, 1, 1), "Foo", "Bar", "1234567890", "foo.bar@loanbroker.com", 8000.0);
+        customer.setCreditScore(900);
+        LoanResponseDto expected = new LoanResponseDto(true, 20000.0);
+        //when
+        when(customerService.getByTcknAndBirthDate(loanApplicationDto.getTckn(), birthDate)).thenReturn(customer);
+        when(creditScoreProducer.send(loanApplicationDto.getTckn())).thenReturn(900);
+        doNothing().when(loanApplicationPublisher).onLoanApplication(any(Loan.class));
+        //then
+        LoanResponseDto loanResponseDto = loanService.applyLoan(loanApplicationDto);
+        assertEquals(expected.getAmount(), loanResponseDto.getAmount());
+        assertEquals(expected.isApproved(), loanResponseDto.isApproved());
+        verify(loanRepository, times(1)).save(any(Loan.class));
+        verify(loanApplicationPublisher, times(1)).onLoanApplication(any(Loan.class));
+    }
+
+    @Test
+    void applyLoan_whenCustomerDoesNotExist_thenThrowCustomerNotFoundException() {
+        //given
+        LocalDate birthDate = LocalDate.of(1999, 1, 1);
+        Customer customer = new Customer(12345678910L, birthDate, "Foo", "Bar", "1234567890", "foo.bar@loanbroker.com", 8000.0);
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(12345678910L);
+        loanApplicationDto.setBirthDate(DateTimeFormatter.ofPattern(DATE_FORMAT).format(birthDate));
+        //when
+        when(customerService.getByTcknAndBirthDate(customer.getTckn(), customer.getBirthDate())).thenThrow(new CustomerNotFoundException("Customer tckn: " + customer.getTckn() + " and birth date" + customer.getBirthDate() + " not found!"));
+        //then
+        Exception exception = assertThrows(CustomerNotFoundException.class, () -> loanService.applyLoan(loanApplicationDto));
+        assertEquals(CustomerNotFoundException.class, exception.getClass());
+        assertEquals("Customer tckn: " + customer.getTckn() + " and birth date" + customer.getBirthDate() + " not found!", exception.getMessage());
+        verify(loanRepository, times(0)).save(any(Loan.class));
+        verify(loanApplicationPublisher, times(0)).onLoanApplication(any(Loan.class));
     }
 
     @Test
