@@ -3,7 +3,6 @@ package com.eminyilmazz.loanbrokerapp.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 public class CustomerDto implements Serializable {
     @Digits(fraction = 0, integer = 11)
     @NotNull(message = "TCKN cannot be empty.")
