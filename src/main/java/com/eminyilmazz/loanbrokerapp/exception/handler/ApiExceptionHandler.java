@@ -51,14 +51,6 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    private ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException e) {
-        Map<String, String> error = new HashMap<>();
-        error.put("message", ExceptionUtils.getMessage(e));
-        logException(error);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
     @ExceptionHandler(DuplicateTcknException.class)
     private ResponseEntity<Map<String, String>> handleDuplicateTcknException(DuplicateTcknException e) {
         Map<String, String> error = new HashMap<>();
