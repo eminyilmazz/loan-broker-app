@@ -55,3 +55,5 @@ VALUES (9, '2022-12-30 23:31:11.167', 'true', 'true', 10000, 10000000810);
 INSERT INTO test_schema.loans (id, approval_date, approval_status, due_status, loan_amount, customer_tckn)
 VALUES (10, '2021-10-13 10:44:42.163', 'true', 'true', 10000, 10000000010),
        (11, '2022-11-03 15:26:32.166', 'false', 'false', 0, 10000000010);
+
+SELECT setval('test_schema.loans_id_seq', 12, true);
