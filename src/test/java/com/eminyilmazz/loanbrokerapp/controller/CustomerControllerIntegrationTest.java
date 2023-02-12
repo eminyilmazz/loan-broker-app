@@ -23,8 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -130,6 +129,35 @@ class CustomerControllerIntegrationTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("DuplicateTcknException: Provided TCKN already exists.\nCannot accept duplicate TCKN.\n"))
                 .andReturn();
+    }
+
+    @Test
+    void updateCustomer_validInput_customerUpdatedSuccessfully() throws Exception {
+        CustomerDto customerDto = new CustomerDto(10000000850L, "1997-06-20", "Emi", "Bradford", "4683423428", "b-emi@gmail.com", 5000.0);
+        Customer expected = new Customer(10000000850L, LocalDate.of(1997, 6, 20), "Emi", "Bradford", "4683423428", "b-emi@gmail.com", 5000.0);
+
+        mockMvc.perform(put("/customer/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tckn").value(expected.getTckn()))
+                .andExpect(jsonPath("$.birth_date").value(String.valueOf(expected.getBirthDate())))
+                .andExpect(jsonPath("$.first_name").value(expected.getFirstName()))
+                .andExpect(jsonPath("$.last_name").value(expected.getLastName()))
+                .andExpect(jsonPath("$.phone_number").value(expected.getPhoneNumber()))
+                .andExpect(jsonPath("$.email_address").value(expected.getEmailAddress()))
+                .andExpect(jsonPath("$.monthly_salary").value(expected.getMonthlySalary()));
+    }
+
+    @Test
+    void updateCustomer_whenTcknDoesNotExist_thenReturnNotFound() throws Exception {
+        CustomerDto customerDto = new CustomerDto(12345678910L, "1997-01-01", "Foo", "Bar", "1234567890", "foo.bar@gmail.com", 3000.0);
+
+        mockMvc.perform(put("/customer/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerDto)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("CustomerNotFoundException: Customer tckn: 12345678910 not found!"));
     }
 
     private static List<Customer> getCustomers() {
