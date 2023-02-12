@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.eminyilmazz</groupId>
     <artifactId>loan-broker-app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <name>loan-broker-app</name>
     <description>loan-broker-app</description>
     <properties>
