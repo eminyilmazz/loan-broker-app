@@ -2,6 +2,9 @@ package com.eminyilmazz.loanbrokerapp.controller;
 
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
+import com.eminyilmazz.loanbrokerapp.model.dto.CustomerDto;
+import com.eminyilmazz.loanbrokerapp.repository.CustomerRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,6 +13,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +36,10 @@ class CustomerControllerIntegrationTest {
     private TestRestTemplate restTemplate;
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Test
     void testGetAllCustomers() {
@@ -67,6 +76,60 @@ class CustomerControllerIntegrationTest {
         mockMvc.perform(get("/customer/get?tckn=" + tckn))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("CustomerNotFoundException: Customer tckn: " + tckn + " not found!"));
+    }
+
+    @Test
+    void givenCustomerDto_whenAddCustomer_thenReturnCreatedCustomer() throws Exception {
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setTckn(98765432100L);
+        customerDto.setBirthDate("1999-01-01");
+        customerDto.setFirstName("Foo");
+        customerDto.setLastName("Bar");
+        customerDto.setPhoneNumber("1234567890");
+        customerDto.setEmailAddress("foo.bar@loanbroker.com");
+        customerDto.setMonthlySalary(3000.0);
+
+        Customer expected = new Customer();
+        expected.setTckn(customerDto.getTckn());
+        expected.setBirthDate(LocalDate.of(1999, 1, 1));
+        expected.setFirstName(customerDto.getFirstName());
+        expected.setLastName(customerDto.getLastName());
+        expected.setPhoneNumber(customerDto.getPhoneNumber());
+        expected.setEmailAddress(customerDto.getEmailAddress());
+        expected.setMonthlySalary(customerDto.getMonthlySalary());
+
+
+        mockMvc.perform(post("/customer/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerDto)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.tckn").value(expected.getTckn()))
+                .andExpect(jsonPath("$.birth_date").value(String.valueOf(expected.getBirthDate())))
+                .andExpect(jsonPath("$.first_name").value(expected.getFirstName()))
+                .andExpect(jsonPath("$.last_name").value(expected.getLastName()))
+                .andExpect(jsonPath("$.phone_number").value(expected.getPhoneNumber()))
+                .andExpect(jsonPath("$.email_address").value(expected.getEmailAddress()))
+                .andExpect(jsonPath("$.monthly_salary").value(expected.getMonthlySalary()));
+        customerRepository.deleteById(expected.getTckn());
+    }
+
+    @Test
+    void addCustomer_whenTcknAlreadyExists_thenReturnConflict() throws Exception {
+        CustomerDto customerDto = new CustomerDto();
+        customerDto.setTckn(10000000850L);
+        customerDto.setBirthDate("1999-01-01");
+        customerDto.setFirstName("Foo");
+        customerDto.setLastName("Bar");
+        customerDto.setPhoneNumber("1234567890");
+        customerDto.setEmailAddress("foo.bar@loanbroker.com");
+        customerDto.setMonthlySalary(3000.0);
+
+        mockMvc.perform(post("/customer/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerDto)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("DuplicateTcknException: Provided TCKN already exists.\nCannot accept duplicate TCKN.\n"))
+                .andReturn();
     }
 
     private static List<Customer> getCustomers() {
