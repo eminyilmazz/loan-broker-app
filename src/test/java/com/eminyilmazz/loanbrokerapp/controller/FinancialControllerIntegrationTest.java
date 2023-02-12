@@ -4,6 +4,8 @@ package com.eminyilmazz.loanbrokerapp.controller;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,6 @@ class FinancialControllerIntegrationTest {
         request.setTckn(tckn);
         request.setBirthDate("1999-10-30");
 
-
         mockMvc.perform(get("/loan/history")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -62,6 +63,99 @@ class FinancialControllerIntegrationTest {
                 .andExpect(jsonPath("$[1].approval_date").value("2022-11-03T15:26:32.166"))
                 .andExpect(jsonPath("$[1].approval_status").value(false))
                 .andExpect(jsonPath("$[1].due_status").value(false));
+    }
+    @Test
+    void applyLoan_when850CreditScore() throws Exception {
+        long tckn = 10000000850L;
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(tckn);
+        loanApplicationDto.setBirthDate("1997-06-20");
+        loanApplicationDto.setAssurance(10000.0);
+        LoanResponseDto expected = new LoanResponseDto(true, 22000.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.approval_status").value(expected.isApproved()))
+                .andExpect(jsonPath("$.credit_amount").value(expected.getAmount()));
+    }
+
+    @Test
+    void applyLoan_when1000CreditScore() throws Exception {
+        long tckn = 10000000950L;
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(tckn);
+        loanApplicationDto.setBirthDate("1993-04-14");
+        loanApplicationDto.setAssurance(10000.0);
+        LoanResponseDto expected = new LoanResponseDto(true, 39748.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.approval_status").value(expected.isApproved()))
+                .andExpect(jsonPath("$.credit_amount").value(expected.getAmount()));
+    }
+
+    @Test
+    void applyLoan_when50CreditScore() throws Exception {
+        long tckn = 10000000050L;
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(tckn);
+        loanApplicationDto.setBirthDate("1993-10-19");
+        loanApplicationDto.setAssurance(10000.0);
+        LoanResponseDto expected = new LoanResponseDto(false, 0.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.approval_status").value(expected.isApproved()))
+                .andExpect(jsonPath("$.credit_amount").value(expected.getAmount()));
+    }
+
+    @Test
+    void applyLoan_when850CreditScore_withoutAssurance() throws Exception {
+        long tckn = 10000000850L;
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(tckn);
+        loanApplicationDto.setBirthDate("1997-06-20");
+        LoanResponseDto expected = new LoanResponseDto(true, 20000.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.approval_status").value(expected.isApproved()))
+                .andExpect(jsonPath("$.credit_amount").value(expected.getAmount()));
+    }
+
+    @Test
+    void applyLoan_whenTcknDoesNotExist_shouldReturnError() throws Exception {
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setBirthDate("1993-10-19");
+        loanApplicationDto.setAssurance(10000.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.tckn").value("TCKN cannot be empty."));
+    }
+
+    @Test
+    void applyLoan_whenBirthDateDoesNotExist_shouldReturnError() throws Exception {
+        long tckn = 10000000050L;
+        LoanApplicationDto loanApplicationDto = new LoanApplicationDto();
+        loanApplicationDto.setTckn(tckn);
+        loanApplicationDto.setAssurance(10000.0);
+
+        mockMvc.perform(post("/loan/apply")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loanApplicationDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.birthDate").value("must not be blank"));
     }
 
     private static List<Customer> getCustomers() {
