@@ -1,7 +1,10 @@
 package com.eminyilmazz.loanbrokerapp.controller;
 
+
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
+import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,8 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource(locations = "classpath:test-application.properties")
@@ -25,6 +28,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FinancialControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void testGetAllLoans() throws Exception {
@@ -33,6 +38,30 @@ class FinancialControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(expectedLoans.size())));
+    }
+
+    @Test
+    void testGetLoansByCustomerSuccess() throws Exception {
+        Long tckn = 10000000010L;
+        GetLoansRequestDto request = new GetLoansRequestDto();
+        request.setApproved("false");
+        request.setTckn(tckn);
+        request.setBirthDate("1999-10-30");
+
+
+        mockMvc.perform(get("/loan/history")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].loan_amount").value(10000.0))
+                .andExpect(jsonPath("$[0].approval_date").value("2021-10-13T10:44:42.163"))
+                .andExpect(jsonPath("$[0].approval_status").value(true))
+                .andExpect(jsonPath("$[0].due_status").value(true))
+                .andExpect(jsonPath("$[1].loan_amount").value(0.0))
+                .andExpect(jsonPath("$[1].approval_date").value("2022-11-03T15:26:32.166"))
+                .andExpect(jsonPath("$[1].approval_status").value(false))
+                .andExpect(jsonPath("$[1].due_status").value(false));
     }
 
     private static List<Customer> getCustomers() {
