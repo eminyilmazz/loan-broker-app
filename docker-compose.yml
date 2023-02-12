@@ -1,0 +1,32 @@
+version: '3.1'
+services:
+  loan-broker-service:
+    image: eminyilmazz/loanbroker:latest
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - rabbitmq
+      - postgres-db
+    environment:
+      spring.datasource.url: jdbc:postgresql://postgres-db:5432/loan-broker-app
+      spring.rabbitmq.host: host.docker.internal
+    links:
+      - rabbitmq
+      - postgres-db
+  postgres-db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=loan-broker-app
+  rabbitmq:
+    image: rabbitmq:3.11.8-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
