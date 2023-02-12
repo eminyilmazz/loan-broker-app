@@ -5,6 +5,7 @@ import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.GetLoansRequestDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
+import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource(locations = "classpath:test-application.properties")
@@ -156,6 +156,30 @@ class FinancialControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loanApplicationDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.birthDate").value("must not be blank"));
+    }
+
+    @Test
+    void payLoan_validInput_returnsSuccessful() throws Exception {
+        LoanPaymentApplication application = new LoanPaymentApplication(9L, 10000000810L, "1995-06-22");
+
+
+        mockMvc.perform(put("/loan/pay")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(application)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("Payment successful"));
+    }
+
+    @Test
+    void payLoan_invalidInput_returnsAlreadyPaid() throws Exception {
+        LoanPaymentApplication application = new LoanPaymentApplication(5L, 10000000950L, "1993-04-14");
+
+
+        mockMvc.perform(put("/loan/pay")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(application)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("Already paid"));
     }
 
     private static List<Customer> getCustomers() {
