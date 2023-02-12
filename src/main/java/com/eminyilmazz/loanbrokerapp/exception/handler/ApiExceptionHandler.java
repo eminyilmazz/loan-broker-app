@@ -43,14 +43,6 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    @ExceptionHandler(IllegalTcknException.class)
-    private ResponseEntity<Map<String, String>> handleIllegalTcknException(IllegalTcknException e) {
-        Map<String, String> error = new HashMap<>();
-        error.put("message", ExceptionUtils.getMessage(e));
-        logException(error);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
     @ExceptionHandler(DuplicateTcknException.class)
     private ResponseEntity<Map<String, String>> handleDuplicateTcknException(DuplicateTcknException e) {
         Map<String, String> error = new HashMap<>();
