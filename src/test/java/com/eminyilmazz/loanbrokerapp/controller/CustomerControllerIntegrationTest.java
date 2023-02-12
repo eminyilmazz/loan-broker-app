@@ -1,9 +1,11 @@
 package com.eminyilmazz.loanbrokerapp.controller;
 
+import com.eminyilmazz.loanbrokerapp.exception.CustomerNotFoundException;
 import com.eminyilmazz.loanbrokerapp.model.Customer;
 import com.eminyilmazz.loanbrokerapp.model.Loan;
 import com.eminyilmazz.loanbrokerapp.model.dto.CustomerDto;
 import com.eminyilmazz.loanbrokerapp.repository.CustomerRepository;
+import com.eminyilmazz.loanbrokerapp.service.implementation.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +26,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource(locations = "classpath:test-application.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -39,6 +41,8 @@ class CustomerControllerIntegrationTest {
     private ObjectMapper objectMapper;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private CustomerService customerService;
 
     @Test
     void testGetAllCustomers() {
@@ -158,6 +162,31 @@ class CustomerControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(customerDto)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("CustomerNotFoundException: Customer tckn: 12345678910 not found!"));
+    }
+
+
+    @Test
+    void deleteCustomer_whenExistingTcknIsProvided_shouldDeleteTheCustomer() throws Exception {
+        long tckn = 12345678910L;
+        LocalDate birthDate = LocalDate.of(1999, 1, 1);
+        Customer customer = new Customer(tckn, birthDate, "Foo", "Bar", "1234567890", "foo.bar@loanbroker.com", 3000.0);
+
+        customerRepository.save(customer);
+
+        mockMvc.perform(delete("/customer/delete?tckn=" + tckn))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Successfully deleted."));
+
+        assertThrows(CustomerNotFoundException.class, () -> customerService.getByTckn(tckn));
+    }
+
+    @Test
+    void deleteCustomer_whenNonExistingTcknIsProvided_shouldReturnNotFound() throws Exception {
+        long tckn = 99999999999L;
+
+        mockMvc.perform(delete("/customer/delete?tckn=" + tckn))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("CustomerNotFoundException: Delete operation is not successful. The customer does not exist."));
     }
 
     private static List<Customer> getCustomers() {
