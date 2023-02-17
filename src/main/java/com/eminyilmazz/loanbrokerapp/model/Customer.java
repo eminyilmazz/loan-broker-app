@@ -2,13 +2,13 @@ package com.eminyilmazz.loanbrokerapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import javax.persistence.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;

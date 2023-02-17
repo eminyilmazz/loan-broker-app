@@ -1,11 +1,11 @@
 package com.eminyilmazz.loanbrokerapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.*;
 import java.io.Serializable;
 
 @NoArgsConstructor
