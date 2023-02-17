@@ -47,7 +47,6 @@ public class EmailService implements IEmailService {
         } catch (MessagingException e) {
             logger.error("Error sending mail");
             logger.error(ExceptionUtils.getStackTrace(e));
-            throw e;
         }
     }
 }
