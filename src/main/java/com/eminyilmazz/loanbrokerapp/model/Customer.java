@@ -1,5 +1,6 @@
 package com.eminyilmazz.loanbrokerapp.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
@@ -31,6 +32,7 @@ public class Customer implements Serializable {
     @Column(name = "birth_date", nullable = false)
     @Past
     @JsonProperty(value = "birth_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     @Transient
     @JsonIgnore

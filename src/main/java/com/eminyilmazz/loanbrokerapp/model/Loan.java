@@ -1,10 +1,12 @@
 package com.eminyilmazz.loanbrokerapp.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,6 +37,7 @@ public class Loan implements Serializable {
     @Column(name = "approval_date")
     @CreationTimestamp
     @JsonProperty(value = "approval_date")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime approvalDate;
     @ApiModelProperty(name = "Approval status", notes = "Boolean value of approval status of loan application", example = "true")
     @Column(name = "approval_status", nullable = false)

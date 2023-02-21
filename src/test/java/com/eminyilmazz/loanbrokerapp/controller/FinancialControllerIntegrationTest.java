@@ -56,11 +56,11 @@ class FinancialControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].loan_amount").value(10000.0))
-                .andExpect(jsonPath("$[0].approval_date").value("2021-10-13T10:44:42.163"))
+                .andExpect(jsonPath("$[0].approval_date").value("2021-10-13 10:44:42.163"))
                 .andExpect(jsonPath("$[0].approval_status").value(true))
                 .andExpect(jsonPath("$[0].due_status").value(true))
                 .andExpect(jsonPath("$[1].loan_amount").value(0.0))
-                .andExpect(jsonPath("$[1].approval_date").value("2022-11-03T15:26:32.166"))
+                .andExpect(jsonPath("$[1].approval_date").value("2022-11-03 15:26:32.166"))
                 .andExpect(jsonPath("$[1].approval_status").value(false))
                 .andExpect(jsonPath("$[1].due_status").value(false));
     }
