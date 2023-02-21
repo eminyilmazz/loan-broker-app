@@ -12,7 +12,8 @@ import java.util.Locale;
 public class LoanUtility {
     private static final Double CREDIT_LIMIT_MULTIPLIER = 4D;
 
-    private LoanUtility() {}
+    private LoanUtility() {
+    }
 
     public static LoanResponseDto processApplication(Customer customer, LoanApplicationDto application) {
         LoanResponseDto loan = new LoanResponseDto();
@@ -50,7 +51,7 @@ public class LoanUtility {
         else return assurance * 0.25; //Credit score -> 500 < x < 1000
     }
 
-    public static String formatCurrency(double d){
+    public static String formatCurrency(double d) {
         String amount = String.valueOf(d);
         Locale locale = new Locale("en", "US");
         Currency currency = Currency.getInstance(locale);

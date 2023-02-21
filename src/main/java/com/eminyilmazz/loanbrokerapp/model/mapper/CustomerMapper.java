@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public class CustomerMapper {
     public static final String DATE_FORMAT = "yyyy-MM-dd";
+
     private CustomerMapper() {
     }
 

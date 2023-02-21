@@ -41,6 +41,7 @@ public class CustomerController {
         validate(tckn);
         return ResponseEntity.ok(customerService.getByTckn(tckn));
     }
+
     @ApiOperation(value = "Add a customer", code = 202)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Customer added successfully", response = Customer.class, responseContainer = "ResponseEntity"),

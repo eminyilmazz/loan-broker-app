@@ -4,7 +4,7 @@ import com.eminyilmazz.loanbrokerapp.model.Loan;
 import org.springframework.context.ApplicationEvent;
 
 public class LoanEvent extends ApplicationEvent {
-    private Loan loan;
+    private final Loan loan;
 
     public LoanEvent(Object source, Loan loan) {
         super(source);

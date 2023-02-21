@@ -10,8 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class CreditScoreListener {
     private static final Logger logger = LoggerFactory.getLogger(CreditScoreListener.class);
+
     @RabbitListener(queues = RabbitConfig.CREDIT_QUEUE)
-    private Integer creditScoreListener(Long tckn){
+    private Integer creditScoreListener(Long tckn) {
         logger.trace("Credit score request received for: {}", tckn);
         return CreditScoreService.calculateCreditScore(tckn);
     }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 import static com.eminyilmazz.loanbrokerapp.utility.TcknValidator.validate;
 
@@ -27,6 +26,7 @@ import static com.eminyilmazz.loanbrokerapp.utility.TcknValidator.validate;
 public class FinancialController {
     @Autowired
     ILoanService loanService;
+
     /**
      * @return List<Loan>
      * @apiNote Endpoint to get all loans.

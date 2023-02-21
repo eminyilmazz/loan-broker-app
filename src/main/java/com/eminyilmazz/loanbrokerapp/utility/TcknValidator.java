@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TcknValidator {
-    private TcknValidator(){}
+    private TcknValidator() {
+    }
+
     private static final String TCKN_REGEX = "^[1-9]\\d{10}$";
 
     public static void validate(Long tckn) {

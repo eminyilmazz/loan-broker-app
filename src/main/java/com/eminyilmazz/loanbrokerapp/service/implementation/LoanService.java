@@ -40,6 +40,7 @@ public class LoanService implements ILoanService {
     LoanApplicationPublisher loanApplicationPublisher;
     private static final Logger logger = LoggerFactory.getLogger(LoanService.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public List<Loan> getAll() {
         return loanRepository.findAll();
@@ -48,8 +49,9 @@ public class LoanService implements ILoanService {
     @Override
     public List<Loan> getByCustomer(GetLoansRequestDto request) {
         Customer customer = customerService.getByTcknAndBirthDate(request.getTckn(),
-                                                                  LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(request.getBirthDate())));
-        if (Boolean.parseBoolean(request.getApproved())) return loanRepository.findByCustomerAndApprovalStatus(customer, true);
+                LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(request.getBirthDate())));
+        if (Boolean.parseBoolean(request.getApproved()))
+            return loanRepository.findByCustomerAndApprovalStatus(customer, true);
         else return loanRepository.findByCustomer(customer);
     }
 
@@ -85,7 +87,7 @@ public class LoanService implements ILoanService {
     @Override
     public String payLoan(LoanPaymentApplication application) {
         LocalDate date = LocalDate.from(DateTimeFormatter.ofPattern(DATE_FORMAT).parse(application.getBirthDate()));
-        if(!loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(application.getId(), application.getTckn(), date))
+        if (!loanRepository.existsByIdAndCustomer_TcknAndCustomer_BirthDate(application.getId(), application.getTckn(), date))
             throw new LoanNotFoundException("Loan with id: " + application.getId() + " tckn: " + application.getTckn() + " birth date: " + application.getBirthDate() + " not found!");
         Loan loan = loanRepository.findByIdAndCustomer_TcknAndCustomer_BirthDate(application.getId(), application.getTckn(), date);
         if (!loan.isDueStatus()) return "Already paid";

@@ -64,6 +64,7 @@ class FinancialControllerIntegrationTest {
                 .andExpect(jsonPath("$[1].approval_status").value(false))
                 .andExpect(jsonPath("$[1].due_status").value(false));
     }
+
     @Test
     void applyLoan_when850CreditScore() throws Exception {
         long tckn = 10000000850L;

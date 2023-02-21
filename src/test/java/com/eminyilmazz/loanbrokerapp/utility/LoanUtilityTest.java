@@ -95,6 +95,7 @@ class LoanUtilityTest {
         assertTrue(loanResponse.isApproved());
         assertEquals(32500.0, loanResponse.getAmount());
     }
+
     @Test
     void whenCreditScoreIsLowerThan500_thenLoanIsNotApprovedAndAmount0() {
         //given

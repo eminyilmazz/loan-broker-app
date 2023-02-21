@@ -11,7 +11,6 @@ import com.eminyilmazz.loanbrokerapp.model.dto.LoanApplicationDto;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanPaymentApplication;
 import com.eminyilmazz.loanbrokerapp.model.dto.LoanResponseDto;
 import com.eminyilmazz.loanbrokerapp.repository.LoanRepository;
-import com.eminyilmazz.loanbrokerapp.utility.LoanUtility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

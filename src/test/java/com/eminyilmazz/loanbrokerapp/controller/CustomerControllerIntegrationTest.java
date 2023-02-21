@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestPropertySource(locations = "classpath:test-application.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,7 +50,8 @@ class CustomerControllerIntegrationTest {
                 "/customer/all",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<Customer>>(){});
+                new ParameterizedTypeReference<List<Customer>>() {
+                });
 
         List<Customer> customers = response.getBody();
         assertThat(customers).isNotNull();
