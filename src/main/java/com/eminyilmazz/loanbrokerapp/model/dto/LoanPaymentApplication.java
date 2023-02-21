@@ -4,15 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor
-public class LoanPaymentApplication {
+@NoArgsConstructor
+public class LoanPaymentApplication implements Serializable {
     @ApiModelProperty(name = "Loan id", required = true, notes = "Loan id that is to be paid.", example = "1")
     @NotNull
     private Long id;
