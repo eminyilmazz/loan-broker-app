@@ -1,7 +1,6 @@
 package com.eminyilmazz.loanbrokerapp.exception.handler;
 
 import com.eminyilmazz.loanbrokerapp.exception.DuplicateTcknException;
-import com.eminyilmazz.loanbrokerapp.exception.IllegalTcknException;
 import com.eminyilmazz.loanbrokerapp.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +51,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    private ResponseEntity<Map<String, String>> handleException(DuplicateTcknException e) {
+    private ResponseEntity<Map<String, String>> handleException(Exception e) {
         Map<String, String> error = new HashMap<>();
         error.put("message", ExceptionUtils.getMessage(e));
         logException(error);
