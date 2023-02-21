@@ -1,0 +1,252 @@
+openapi: "3.0.3"
+info:
+  title: "loan_broker_app API"
+  description: "loan_broker_app API"
+  version: "1.0.0"
+servers:
+  - url: "https://loan_broker_app"
+paths:
+  /customer/all:
+    get:
+      summary: "GET customer/all"
+      operationId: "getAll"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Customer"
+  /customer/get:
+    get:
+      summary: "GET customer/get"
+      operationId: "getByTckn"
+      parameters:
+        - name: "tckn"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /customer/add:
+    post:
+      summary: "POST customer/add"
+      operationId: "addCustomer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /customer/update:
+    put:
+      summary: "PUT customer/update"
+      operationId: "updateCustomer"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CustomerDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /customer/delete:
+    delete:
+      summary: "DELETE customer/delete"
+      operationId: "deleteCustomer"
+      parameters:
+        - name: "tckn"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+paths:
+  /loan/get/all:
+    get:
+      summary: "GET loan/get/all"
+      operationId: "getAllLoans"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /loan/history:
+    get:
+      summary: "GET loan/history"
+      operationId: "getLoans"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetLoansRequestDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /loan/apply:
+    post:
+      summary: "POST loan/apply"
+      operationId: "applyLoan"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanApplicationDto"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+  /loan/pay:
+    put:
+      summary: "PUT loan/pay"
+      operationId: "payLoan"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanPaymentApplication"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ResponseEntity"
+components:
+  schemas:
+    HttpHeaders:
+      type: "object"
+      properties: { }
+    ResponseEntity:
+      type: "object"
+      properties:
+        headers:
+          $ref: "#/components/schemas/HttpHeaders"
+    GetLoansRequestDto:
+      type: "object"
+      properties:
+        tckn:
+          type: "integer"
+          format: "int64"
+        birth_date:
+          type: "string"
+        approved:
+          type: "string"
+    LoanApplicationDto:
+      type: "object"
+      properties:
+        tckn:
+          type: "integer"
+          format: "int64"
+        birth_date:
+          type: "string"
+        assurance:
+          type: "number"
+          format: "double"
+    LoanPaymentApplication:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        tckn:
+          type: "integer"
+          format: "int64"
+        birth_date:
+          type: "string"
+    Loan:
+      type: "object"
+      properties:
+        loan_amount:
+          type: "number"
+          format: "double"
+        approval_date:
+          type: "string"
+          format: "date-time"
+        approval_status:
+          type: "boolean"
+        due_status:
+          type: "boolean"
+    Customer:
+      type: "object"
+      properties:
+        tckn:
+          type: "integer"
+          format: "int64"
+        birth_date:
+          type: "string"
+          format: "date"
+        first_name:
+          type: "string"
+        last_name:
+          type: "string"
+        phone_number:
+          type: "string"
+        email_address:
+          type: "string"
+        monthly_salary:
+          type: "number"
+          format: "double"
+        loans:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Loan"
+    CustomerDto:
+      type: "object"
+      properties:
+        tckn:
+          type: "integer"
+          format: "int64"
+        birth_date:
+          type: "string"
+        first_name:
+          type: "string"
+        last_name:
+          type: "string"
+        phone_number:
+          type: "string"
+        email_address:
+          type: "string"
+        monthly_salary:
+          type: "number"
+          format: "double"
