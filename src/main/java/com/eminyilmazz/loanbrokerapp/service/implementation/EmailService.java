@@ -25,7 +25,7 @@ public class EmailService implements IEmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     @Autowired
     JavaMailSender javaMailSender;
-    @Value("${spring.mail.username:loanbrokerapp@outlook.com}")
+    @Value("${spring.mail.username:loan-broker-app@outlook.com}")
     String _from;
 
     @Override
